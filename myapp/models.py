@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.conf import settings
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -31,21 +33,42 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     job = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField(unique=True)
     birth_date = models.DateField()
-
     mobile = models.CharField(max_length=11)
     phone = models.CharField(max_length=15)
     province = models.CharField(max_length=20, blank=True, null=True)
     city = models.CharField(max_length=20, blank=True, null=True)
     postal_code = models.CharField(max_length=10)
     full_address = models.TextField()
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
     objects = CustomUserManager()
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name', 'national_code', 'birth_date']
 
     def __str__(self):
         return self.email
+
+class UserProfile(models.Model):
+        user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+        purchase_score = models.PositiveIntegerField(default=0)
+        orders_count = models.PositiveIntegerField(default=0)
+        profile_completion = models.PositiveIntegerField(default=0)
+
+        def __str__(self):
+            return f"{self.user.email} - Profile"
+
+class Product(models.Model):
+        title = models.CharField(max_length=255)
+        image = models.ImageField(upload_to='product_images/')
+        price = models.PositiveIntegerField()
+        TYPE_CHOICES = (
+            ('favorite', 'Favorite'),
+            ('repeated', 'Repeated'),
+            ('gallery', 'Gallery'),
+        )
+        type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+        def __str__(self):
+            return self.title
