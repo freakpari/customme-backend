@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.conf import settings
 
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -24,7 +23,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
-
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=255)
@@ -48,15 +46,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-class UserProfile(models.Model):
-        user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-        profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
-        purchase_score = models.PositiveIntegerField(default=0)
-        orders_count = models.PositiveIntegerField(default=0)
-        profile_completion = models.PositiveIntegerField(default=0)
 
-        def __str__(self):
-            return f"{self.user.email} - Profile"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    purchase_score = models.PositiveIntegerField(default=0)
+    total_designs = models.PositiveIntegerField(default=0)
+    orders_count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.user.email
 
 class Product(models.Model):
         title = models.CharField(max_length=255)

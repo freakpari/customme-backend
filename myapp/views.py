@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from .models import UserProfile
-from .serializers import UserProfileSerializer, CustomUserSerializer
+from .serializers import UserProfileSerializer, CustomUserSerializer,SideProfileSerializer
 
 
 
@@ -78,3 +78,11 @@ class AccountInfoView(APIView):
 
             return Response({'message': 'اطلاعات با موفقیت ویرایش شد'}, status=200)
         return Response(serializer.errors, status=400)
+
+class SideProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        serializer = SideProfileSerializer(profile)
+        return Response(serializer.data)

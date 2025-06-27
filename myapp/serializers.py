@@ -82,3 +82,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         def get_gallery(self, obj):
             products = Product.objects.filter(user=obj.user, type='gallery')
             return ProductSerializer(products, many=True).data
+
+class SideProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_image', 'purchase_score', 'total_designs', 'orders_count']
