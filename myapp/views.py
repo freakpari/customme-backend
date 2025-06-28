@@ -5,8 +5,9 @@ from .serializers import RegisterSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
-from .models import UserProfile
-from .serializers import  CustomUserSerializer,SideProfileSerializer
+from .models import UserProfile,Product,UserStats
+from .serializers import  CustomUserSerializer,SideProfileSerializer,ProductSerializer
+from rest_framework.permissions import AllowAny
 
 
 
@@ -80,3 +81,32 @@ class SideProfileView(APIView):
         profile, created = UserProfile.objects.get_or_create(user=request.user)
         serializer = SideProfileSerializer(profile)
         return Response(serializer.data)
+
+
+
+class UserProductListView(APIView):
+        permission_classes = [IsAuthenticated]
+
+        def get(self, request):
+            user = request.user
+            products = Product.objects.filter(user=user)
+            serializer = ProductSerializer(products, many=True, context={'request': request})
+            return Response(serializer.data)
+
+class UserStatsView(APIView):
+            permission_classes = [IsAuthenticated]
+
+            def get(self, request):
+                try:
+                    stats = UserStats.objects.get(user=request.user)
+                    data = {
+                        "current_orders": stats.current_orders,
+                        "delivered_orders": stats.delivered_orders,
+                        "gallery_products": stats.gallery_products,
+                        "physical_products": stats.physical_products,
+                        "canceled_orders": stats.canceled_orders,
+                        "comments": stats.comments,
+                    }
+                    return Response(data)
+                except UserStats.DoesNotExist:
+                    return Response({"detail": "آمار ثبت نشده است."}, status=404)

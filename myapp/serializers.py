@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, UserProfile
+from .models import CustomUser, UserProfile,Product
 from django.contrib.auth import get_user_model
 
 
@@ -47,3 +47,8 @@ class SideProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['profile_image', 'purchase_score', 'total_designs', 'orders_count']
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'

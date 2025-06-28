@@ -58,3 +58,35 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.email
 
+class Product(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='products',
+        verbose_name='کاربر'
+    )
+    name = models.CharField(max_length=255, verbose_name="نام محصول")
+    description = models.TextField(verbose_name="توضیحات", blank=True, null=True)
+    price = models.PositiveIntegerField(verbose_name="قیمت (تومان)")
+    image = models.ImageField(upload_to='product_images/', verbose_name="عکس محصول")
+    is_liked = models.BooleanField(default=False, verbose_name="لایک شده؟")
+
+    def __str__(self):
+        return self.name
+
+
+class UserStats(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="کاربر"
+    )
+    current_orders = models.PositiveIntegerField(default=0, verbose_name="سفارش جاری")
+    delivered_orders = models.PositiveIntegerField(default=0, verbose_name="ارسال شده")
+    gallery_products = models.PositiveIntegerField(default=0, verbose_name="محصول در گالری")
+    physical_products = models.PositiveIntegerField(default=0, verbose_name="محصول فیزیکی")
+    canceled_orders = models.PositiveIntegerField(default=0, verbose_name="سفارش لغو شده")
+    comments = models.PositiveIntegerField(default=0, verbose_name="تعداد نظر")
+
+    def __str__(self):
+        return f"آمار کاربر: {self.user.email}"

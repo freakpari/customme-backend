@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser,UserProfile
+from .models import CustomUser,UserProfile,Product,UserStats
+
+from django.utils.html import format_html
+
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
@@ -28,3 +31,21 @@ admin.site.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'purchase_score', 'orders_count', 'total_designs')
 
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'is_liked', 'user', 'image_tag')  # اضافه کردن image_tag
+    readonly_fields = ('image_tag',)
+    list_filter = ('is_liked', 'user')
+    search_fields = ('name',)
+
+    def image_tag(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="100" style="border-radius:8px;" />'.format(obj.image.url))
+        return "-"
+    image_tag.short_description = 'پیش‌نمایش تصویر'
+
+
+@admin.register(UserStats)
+class UserStatsAdmin(admin.ModelAdmin):
+    list_display = ("user", "current_orders", "delivered_orders", "gallery_products")
+    search_fields = ("user__email",)
