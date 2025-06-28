@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from .models import UserProfile
-from .serializers import UserProfileSerializer, CustomUserSerializer,SideProfileSerializer
+from .serializers import  CustomUserSerializer,SideProfileSerializer
 
 
 
@@ -42,13 +42,7 @@ class LoginView(APIView):
 
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'email': user.email}, status=status.HTTP_200_OK)
-class UserProfileView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        profile, created = UserProfile.objects.get_or_create(user=request.user)
-        serializer = UserProfileSerializer(profile)
-        return Response(serializer.data)
 
 class AccountInfoView(APIView):
     permission_classes = [IsAuthenticated]

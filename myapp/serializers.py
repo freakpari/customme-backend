@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, UserProfile, Product
+from .models import CustomUser, UserProfile
 from django.contrib.auth import get_user_model
 
 
@@ -42,46 +42,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
                 "birth_date", "email", "mobile", "phone",
                 "province", "city", "postal_code", "full_address"
             ]
-
-
-class ProductSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Product
-            fields = ['title', 'image', 'price', 'type']
-
-class UserProfileSerializer(serializers.ModelSerializer):
-        user_full_name = serializers.CharField(source='user.full_name')
-        email = serializers.EmailField(source='user.email')
-
-        favorites = serializers.SerializerMethodField()
-        repeated = serializers.SerializerMethodField()
-        gallery = serializers.SerializerMethodField()
-
-        class Meta:
-            model = UserProfile
-            fields = [
-                'user_full_name',
-                'email',
-                'profile_image',
-                'purchase_score',
-                'orders_count',
-                'profile_completion',
-                'favorites',
-                'repeated',
-                'gallery',
-            ]
-
-        def get_favorites(self, obj):
-            products = Product.objects.filter(user=obj.user, type='favorite')
-            return ProductSerializer(products, many=True).data
-
-        def get_repeated(self, obj):
-            products = Product.objects.filter(user=obj.user, type='repeated')
-            return ProductSerializer(products, many=True).data
-
-        def get_gallery(self, obj):
-            products = Product.objects.filter(user=obj.user, type='gallery')
-            return ProductSerializer(products, many=True).data
 
 class SideProfileSerializer(serializers.ModelSerializer):
     class Meta:

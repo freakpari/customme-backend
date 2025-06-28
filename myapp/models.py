@@ -58,17 +58,3 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.email
 
-class Product(models.Model):
-        title = models.CharField(max_length=255)
-        image = models.ImageField(upload_to='product_images/')
-        price = models.PositiveIntegerField()
-        TYPE_CHOICES = (
-            ('favorite', 'Favorite'),
-            ('repeated', 'Repeated'),
-            ('gallery', 'Gallery'),
-        )
-        type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-        def __str__(self):
-            return self.title
